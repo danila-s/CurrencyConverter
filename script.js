@@ -10,6 +10,7 @@ function init() {
 
     const btn = document.querySelector('#btn-exchange');
     btn.addEventListener('click' , () => {
+        blocks[1].id = 3;
         const value1 = blocks[0].value;
         const value2 = blocks[1].value;
         console.log(value1);
@@ -18,15 +19,18 @@ function init() {
         blocks[0].value = value2
         blocks[0].selectSelected(value2)
         blocks[1].selectSelected(value1)
-        request()
+        request(1)
     })
  
    
  
-    function response(rates) {
-        console.log(blocks[1].value, rates[blocks[1].value])
-        blocks[1].setValue(+blocks[0].input * rates[blocks[1].value])
-            
+    function response(rates , id) {
+        if(id === 2){
+            blocks[0].setValue(+blocks[1].inputField.value/rates[blocks[1].value])
+        }
+        else if (id === 1 ) {blocks[1].setValue(+blocks[0].inputField.value * rates[blocks[1].value])
+        blocks[1].id = 2 ;
+        } 
     }
         
         
@@ -38,8 +42,8 @@ function init() {
         blocks.push(currencyInput); 
     }); 
 
-    function request() { 
-        API.request(blocks[0].value, blocks[1].value, response) 
+    function request(id ) { 
+        API.request(blocks[0].value, blocks[1].value, response , id) 
     } 
 
 }
@@ -48,7 +52,7 @@ function init() {
 class CurrencyInput { 
     
     constructor(inputId, currencyList, defaultValue, callback) { 
-        
+        this.id = inputId;
         this.value = defaultValue; 
         const block = document.querySelector(`#block-${inputId}`); 
         this.block = block
@@ -65,15 +69,15 @@ class CurrencyInput {
             this.selectSelected(this.value)
             console.log('VALUE!!!!!!')
             
-            callback(); 
+            callback(1); 
         }) 
  
         btns.forEach(btn => { 
             btn.addEventListener('click', () => { 
                 block.querySelector('.selected').classList.remove('selected'); 
                 btn.classList.add('selected'); 
-                this.value = btn.innerText;    
-                callback(); 
+                this.value = btn.innerText;   
+                callback(1); 
             }); 
         }); 
         
@@ -88,7 +92,7 @@ class CurrencyInput {
         const input = block.querySelector('input');
         input.addEventListener('change', (e) => {
             this.input = e.target.value ;
-            callback();
+            callback(this.id);
         })
         this.btns = btns;
         
@@ -120,17 +124,13 @@ class CurrencyInput {
 
  
 const API = { 
-    request(base, symbols, callback) { 
+    request(base, symbols, callback ,id) { 
         console.log(base+ "  " + symbols)
         fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`) 
             .then(res => res.json()) 
             .then(data => { 
                 console.log(data.rates)
-                callback(data.rates) 
+                callback(data.rates , id) 
             }) 
     } 
 }
-
-
-
-
