@@ -68,7 +68,16 @@ function init() {
 
     function request(id ) { 
         timeout = setTimeout(showLoading('on') , 500);
-        API.request(blocks[0].value, blocks[1].value, response ,   id , showLoading , errorInApi) 
+        API.request(blocks[0].value, blocks[1].value, response ,   id , showLoading , errorInApi ,equalsValue) 
+    }
+
+    function equalsValue (id) {
+        if(id === 1){
+            blocks[1].setValue(blocks[0].inputField.value)
+        }
+        else if (id === 2){
+            blocks[0].setValue(blocks[1].inputField.value)
+        }
     }
     
 
@@ -151,9 +160,10 @@ class CurrencyInput {
 
  
 const API = { 
-    request(base, symbols, callback ,id ,showLoading , errorInApi) { 
+    request(base, symbols, callback ,id ,showLoading , errorInApi , equalsValue) { 
         if(base === symbols){
             console.log('Одинаковые значения');
+            equalsValue(id)
             showLoading('off')
         }else {
         fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`) 
