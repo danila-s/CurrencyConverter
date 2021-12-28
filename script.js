@@ -79,6 +79,8 @@ function init() {
             blocks[0].setValue(blocks[1].inputField.value)
         }
     }
+
+    request(1)
     
 
 }
@@ -92,6 +94,12 @@ class CurrencyInput {
         const block = document.querySelector(`#block-${inputId}`); 
         this.block = block
         this.inputField = block.querySelector(`#input-${inputId}`)
+        this.inputField.addEventListener('input' , (e) => {
+                this.inputField.value = e.target.value
+                    .replace(/,/g, ".")
+                    .replace(/[^0-9\.,]/g, '');
+            });
+        
         const select = block.querySelector('select'); 
         this.select = select
         const btns = block.querySelectorAll('.btn:not(select)'); 
