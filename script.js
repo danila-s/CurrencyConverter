@@ -28,7 +28,12 @@ function init() {
         }
         else if (id === 1 ) {blocks[1].setValue(+blocks[0].inputField.value * rates[blocks[1].value])
         blocks[1].id = 2 ;
-        } 
+        }
+        
+        const newValue = rates[blocks[1].value];
+        const prompt = document.querySelectorAll('.prompt')
+        prompt[0].innerText = '1 ' + blocks[0].value + '= ' + newValue + blocks[1].value;
+        prompt[1].innerText = '1 ' + blocks[1].value + '= ' + 1/newValue + blocks[0].value;
     }
         
         
@@ -41,8 +46,13 @@ function init() {
     }); 
 
     function request(id ) { 
-        API.request(blocks[0].value, blocks[1].value, response , id) 
-    } 
+        API.request(blocks[0].value, blocks[1].value, response ,   id , showCurrent) 
+    }
+    
+    function showCurrent (firstBlock , secondBlock) {
+        console.log(firstBlock)
+        console.log(secondBlock)
+    }
 
 }
  
@@ -117,24 +127,27 @@ class CurrencyInput {
     }
 
 
+
 } 
 
 
  
 const API = { 
-    request(base, symbols, callback ,id) { 
+    request(base, symbols, callback ,id ,showCurrent) { 
+        
         if(base === symbols){
             console.log('Одинаковые значения')
         }else {
         fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`) 
             .then(res => res.json()) 
             .then(data => { 
-                console.log(data.rates)
                 callback(data.rates , id) 
             })
             .catch(eror => {
                 alert('Что-то пошло не так ')
             }) 
+
         }
-    } 
+    }
 }
+    

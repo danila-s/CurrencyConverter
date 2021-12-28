@@ -88,6 +88,16 @@ option {
     overflow: hidden; 
 }
 
+.prompt {
+    font-family: Roboto;
+    font-size: 12px;
+    line-height: 14px;
+    display: flex;
+    align-items: center;
+
+    color: #C6C6C6
+}
+
 
 
 
