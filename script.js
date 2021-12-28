@@ -1,9 +1,10 @@
 const currencyStr = 'EUR, CHF, NOK, CAD, RUB, GBP, MXN, CNY, ISK, KRW, HKD, CZK, BGN, BRL, USD, IDR, SGD, PHP, RON, HUF, ILS, THB, SEK, NZD, AUD, DKK, HRK, PLN, TRY, INR, MYR, ZAR, JPY'; 
- 
+const cover = document.querySelector('.cover')
 window.addEventListener('load', () => init()); 
- 
+
  
 function init() { 
+    let timeout ;
     const currencyArr = currencyStr.split(', '); 
 
     const blocks = []; 
@@ -21,7 +22,7 @@ function init() {
     })
  
    
- 
+    
     function response(rates , id) {
         if(id === 2){
             blocks[0].setValue(+blocks[1].inputField.value/rates[blocks[1].value])
@@ -32,8 +33,8 @@ function init() {
         
         const newValue = rates[blocks[1].value];
         const prompt = document.querySelectorAll('.prompt')
-        prompt[0].innerText = '1 ' + blocks[0].value + '= ' + newValue + blocks[1].value;
-        prompt[1].innerText = '1 ' + blocks[1].value + '= ' + 1/newValue + blocks[0].value;
+        prompt[0].innerText = '1 ' + blocks[0].value + '= ' + newValue + '  ' + blocks[1].value;
+        prompt[1].innerText = '1 ' + blocks[1].value + '= ' + 1/newValue + '  ' + blocks[0].value;
     }
         
         
@@ -45,14 +46,31 @@ function init() {
         blocks.push(currencyInput); 
     }); 
 
+    function showLoading (turn) {
+        const body = document.querySelector('body');
+        const loading = document.querySelector('.loading');
+        if(turn === 'on'){
+            loading.style.display = 'block'
+            cover.style.display = 'block'
+
+        }else if (turn === 'off'){
+            clearTimeout(timeout);
+            loading.style.display = 'none'
+            cover.style.display = 'none'
+        }
+        
+    }
+
+    function errorInApi(){
+        alert('Что-то пошло не так')
+    }
+
+
     function request(id ) { 
-        API.request(blocks[0].value, blocks[1].value, response ,   id , showCurrent) 
+        timeout = setTimeout(showLoading('on') , 500);
+        API.request(blocks[0].value, blocks[1].value, response ,   id , showLoading , errorInApi) 
     }
     
-    function showCurrent (firstBlock , secondBlock) {
-        console.log(firstBlock)
-        console.log(secondBlock)
-    }
 
 }
  
@@ -133,18 +151,20 @@ class CurrencyInput {
 
  
 const API = { 
-    request(base, symbols, callback ,id ,showCurrent) { 
-        
+    request(base, symbols, callback ,id ,showLoading , errorInApi) { 
         if(base === symbols){
-            console.log('Одинаковые значения')
+            console.log('Одинаковые значения');
+            showLoading('off')
         }else {
         fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`) 
             .then(res => res.json()) 
             .then(data => { 
                 callback(data.rates , id) 
+                showLoading('off')
             })
             .catch(eror => {
-                alert('Что-то пошло не так ')
+                errorInApi();
+                showLoading('off')
             }) 
 
         }
