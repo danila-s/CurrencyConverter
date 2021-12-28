@@ -13,8 +13,6 @@ function init() {
         blocks[1].id = 3;
         const value1 = blocks[0].value;
         const value2 = blocks[1].value;
-        console.log(value1);
-        console.log(value2);
         blocks[1].value = value1
         blocks[0].value = value2
         blocks[0].selectSelected(value2)
@@ -125,12 +123,18 @@ class CurrencyInput {
  
 const API = { 
     request(base, symbols, callback ,id) { 
-        console.log(base+ "  " + symbols)
+        if(base === symbols){
+            console.log('Одинаковые значения')
+        }else {
         fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`) 
             .then(res => res.json()) 
             .then(data => { 
                 console.log(data.rates)
                 callback(data.rates , id) 
+            })
+            .catch(eror => {
+                alert('Что-то пошло не так ')
             }) 
+        }
     } 
 }
